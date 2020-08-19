@@ -15,6 +15,9 @@ public class Main extends PApplet {
     float min = Float.POSITIVE_INFINITY;
     float max = Float.NEGATIVE_INFINITY;
 
+    float angle = 0;
+    final float angleIncrement = 0.05f;
+
     public static void main(String[] args) {
         PApplet.main("Main", args);
     }
@@ -40,7 +43,7 @@ public class Main extends PApplet {
 
     public void draw() {
         background(25);
-        drawFibSphere(strokeWeight, true, false);
+        drawFibSphere(strokeWeight, true, false, true);
     }
 
     void generateFibSphere(int n, float radius) {
@@ -55,24 +58,31 @@ public class Main extends PApplet {
             if (longitude > PI) {
                 longitude -= (2 * PI);
             }
-			
-			final float latitude = (float)Math.asin(-1 + 2 * i/(float)n);
-			final float cosOfLatitude = (float)Math.cos(latitude);
-			points[i] = new PVector(
-				radius * cosOfLatitude * (float)Math.cos(longitude),
-				radius * cosOfLatitude * (float)Math.sin(longitude),
-				radius * (float)Math.sin(latitude)
-			);
+
+            final float latitude = (float)Math.asin(-1 + 2 * i/(float)n);
+            final float cosOfLatitude = (float)Math.cos(latitude);
+            points[i] = new PVector(
+                    radius * cosOfLatitude * (float)Math.cos(longitude),
+                    radius * cosOfLatitude * (float)Math.sin(longitude),
+                    radius * (float)Math.sin(latitude)
+            );
         }
     }
 
-    void drawFibSphere(float strokeWeight, boolean usingColor, boolean usingRGB) {
-        translate((float)width/2, (float)height/2);
+    void drawFibSphere(float strokeWeight, boolean usingColor, boolean usingRGB, boolean oscillation) {
+        translate((float)width/2, (float)height/2, 0);
         scale(10);
-        strokeWeight(strokeWeight);
+        if (oscillation){
+            float oscillatingWeight = strokeWeight * map((float)Math.sin(angle), -1, 1, 0, 2);
+            strokeWeight(oscillatingWeight);
+        }
+        else {
+            strokeWeight(strokeWeight);
+        }
 
         pushMatrix();
-        rotateY(millis() * rotateSpeed);
+        rotateX(millis() * rotateSpeed);
+        rotateY(millis() * rotateSpeed*0.25f);
 
         if (usingColor){
             if (usingRGB){
@@ -103,6 +113,7 @@ public class Main extends PApplet {
         }
 
         popMatrix();
+        angle += angleIncrement;
     }
 
 }
